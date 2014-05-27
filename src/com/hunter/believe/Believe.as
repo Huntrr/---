@@ -1,0 +1,1 @@
+package com.hunter.believe{	import org.flixel.*;	[SWF(width="640", height="480", backgroundColor="#000000")]	//[Frame(factoryClass="Preloader.as")]	public class Believe extends FlxGame	{		public function Believe()		{			super(160, 120, MenuState, 4);			forceDebugger = true;		}	}}
