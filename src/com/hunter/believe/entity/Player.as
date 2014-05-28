@@ -1,5 +1,7 @@
 package com.hunter.believe.entity 
 {
+	import com.hunter.believe.entity.floors.Floor;
+	import com.hunter.believe.util.SpecHandler;
 	import flash.events.TimerEvent;
 	import org.flixel.FlxBasic;
 	import org.flixel.FlxEmitter;
@@ -24,6 +26,9 @@ package com.hunter.believe.entity
 		private var canGetUp:Boolean = true;
 		private var fallTimer:FlxTimer;
 		private var win:Boolean = false;
+		private var moved:Boolean = false;
+		
+		private var blockLast:Floor;
 		
 		public function Player():void {
 			super();
@@ -70,23 +75,24 @@ package com.hunter.believe.entity
 			//Controls
 			acceleration.x = 0;
 			if(!fallen && !standing && !dead) {
-				if (FlxG.keys.LEFT || FlxG.keys.A) {
+				if ((!SpecHandler.controlsReversed() && (FlxG.keys.LEFT || FlxG.keys.A)) || (SpecHandler.controlsReversed() && (FlxG.keys.RIGHT || FlxG.keys.D))) {
 					if (facing == FlxObject.RIGHT) {
 						facing = FlxObject.LEFT;
 						offset.x = 13;
 						x -= 5;
 					}
-					
+					moved = true;
 					acceleration.x = (x - FlxG.camera.scroll.x > width) ? -maxVelocity.x * 4 : 0;
 					if(isTouching(FlxObject.FLOOR))
 						play("run");
 				}
-				if (FlxG.keys.RIGHT || FlxG.keys.D) {
+				if ((!SpecHandler.controlsReversed() && (FlxG.keys.RIGHT || FlxG.keys.D)) || (SpecHandler.controlsReversed() && (FlxG.keys.LEFT || FlxG.keys.A))) {
 					if (facing == FlxObject.LEFT) {
 						facing = FlxObject.RIGHT;
 						x += 5;
 						offset.x = 5;
 					}
+					moved = true;
 					acceleration.x = maxVelocity.x * 4;
 					if(isTouching(FlxObject.FLOOR))
 						play("run");
@@ -97,15 +103,24 @@ package com.hunter.believe.entity
 				}
 				
 				if (FlxG.keys.justPressed("UP") || FlxG.keys.justPressed("W")) {
-					if(isTouching(FlxObject.FLOOR)) {
+					moved = true;
+					if (isTouching(FlxObject.FLOOR)) {
+						
 						velocity.y = -maxVelocity.y / 2;
 						play("jump", true);
 						jumping = true;
-						//fall();
+						if (SpecHandler.jumpFail()) {
+							//TRIP
+							fall();
+						}
 					} else if (!doubleJumped) {
 						play("jump", true);
 						doubleJumped = true;
 						velocity.y = -maxVelocity.y / 2;
+						if (SpecHandler.doubleJumpFail()) {
+							//TRIP
+							fall();
+						}
 					}
 				}
 			} else if(fallen) {
@@ -125,6 +140,13 @@ package com.hunter.believe.entity
 			if (FlxG.keys.justPressed("SPACE")) {
 				FlxG.shake(0.01, 0.25);
 				FlxG.camera.flash(0x990000AA, 0.25);
+				
+				if (SpecHandler.getUp()) {
+					if (fallen) {
+						fallTimer.stop();
+						play("stand", true);
+					}
+				}
 			}
 			
 			//Status
@@ -134,6 +156,13 @@ package com.hunter.believe.entity
 			} else {
 				if (finished || !_curAnim) {
 					play("jumping");
+				}
+			}
+			
+			//Camera
+			if (lastBlock) {
+				if (isTouching(FlxObject.FLOOR)) {
+					FlxG.levels[0] = lastBlock.y - FlxG.height + 5;
 				}
 			}
 		}
@@ -151,12 +180,18 @@ package com.hunter.believe.entity
 			if (!anim) {
 				play("idle", true);
 				win = true;
+				dead = false;
 			}
 			dead = true;
 		}
 		
 		public function hasWon():Boolean {
 			return win;
+		}
+		
+		public function hasMoved():Boolean {
+			//basic check to see if the player has moved
+			return moved;
 		}
 		
 		public function fall(getUp:Boolean = true):void {
@@ -171,10 +206,19 @@ package com.hunter.believe.entity
 		public function stand(e:FlxTimer):void {
 			e.stop();
 			play("stand", true);
+			dead = false;
 		}
 		
 		public function isDead():Boolean { 
 			return dead;
+		}
+		
+		public function set lastBlock(block:Floor):void {
+			blockLast = block;
+		}
+		
+		public function get lastBlock():Floor {
+			return blockLast
 		}
 	}
 

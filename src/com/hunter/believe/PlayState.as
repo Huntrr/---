@@ -3,6 +3,7 @@ package com.hunter.believe
 	import com.hunter.believe.entity.Level;
 	import com.hunter.believe.entity.Player;
 	import com.hunter.believe.entity.SmokeMonster;
+	import com.hunter.believe.util.SpecHandler;
 	import org.flixel.*;
 
 	public class PlayState extends FlxState
@@ -16,15 +17,9 @@ package com.hunter.believe
 				 * 5 more random broken jump
 				 * 6 broken jump
 			 * Obstacles:
-				 * rock
-				 * different floors (quick sand and hole)
-				 * top block
-				 * mid block
+				 * different floors (quick sand (sometimes solid?? sometimes reg floor unsolid?) and hole)
 				 * wall
-			 * Game components:
-				 * Door to next level
 			 * Decorative:
-				 * Pillars
 				 * Background
 				 * Weather (progressively worse)
 				 * Sounds:
@@ -35,10 +30,8 @@ package com.hunter.believe
 					 * Win
 					 * Coin
 					 * MUSIC
-			 * Coins
 		*/
 		//CONST
-		private static const MONSTER_DIST:Number = 900;
 		private static const OFFSET:Number = 75;
 		
 		//Actual objects
@@ -54,10 +47,10 @@ package com.hunter.believe
 		private var blinkTimer:int = 0;
 		
 		private var oldScore:int;
-		private var lastCamY:Number = 0;
 		
 		override public function create():void
 		{
+			FlxG.levels[0] = 0;
 			oldScore = FlxG.score;
 			//Init games
 			FlxG.framerate = 30;
@@ -73,7 +66,7 @@ package com.hunter.believe
 			add(player);			
 			
 			monster = new SmokeMonster();
-			monster.setX(player.x - MONSTER_DIST);
+			monster.setX(player.x - SpecHandler.monsterDist());
 			add(monster);
 			
 			playerEmitter = new FlxEmitter(100, 100);
@@ -94,10 +87,10 @@ package com.hunter.believe
 			warning = new FlxText(0, FlxG.height / 2 - 5, FlxG.width);
 			warning.alignment = "center";
 			warning.shadow = 0xFF000000;
-			warning.color = 0xFFFF0000;
+			warning.color = 0xFF00FF00;
 			add(warning);
-			warning.text = "!! [SPACE] !!";
-			warning.exists = false;
+			warning.text = "[<] [^] [>]";
+			warning.exists = true;
 			
 		}
 		
@@ -116,8 +109,8 @@ package com.hunter.believe
 			monster.direct(player.x, player.y);
 			
 			//handle collisions
-			FlxG.overlap(level, player, level.collide);
 			FlxG.overlap(monster, player, monster.collide);
+			FlxG.overlap(level, player, level.collide);
 			
 			FlxG.collide(level.floor, player);
 			FlxG.collide(level.ceiling, player);
@@ -134,21 +127,21 @@ package com.hunter.believe
 			warning.x = FlxG.camera.scroll.x;
 			lvl.x = FlxG.camera.scroll.x;
 			
-			if(player.isTouching(FlxObject.FLOOR))
-				lastCamY = player.y - FlxG.height + player.height + 5;
-			FlxG.camera.scroll.y = FlxG.camera.scroll.y + (lastCamY - FlxG.camera.scroll.y) / 3
+			FlxG.camera.scroll.y = FlxG.camera.scroll.y + (FlxG.levels[0] - FlxG.camera.scroll.y) / 3
 			progress.y = FlxG.camera.scroll.y;
 			warning.y = FlxG.camera.scroll.y + FlxG.height / 2 - 5;
 			lvl.y = FlxG.camera.scroll.y + FlxG.height - 12;
 			
-			FlxG.worldBounds = new FlxRect(FlxG.camera.scroll.x, FlxG.camera.scroll.y, FlxG.width, FlxG.height);
+			FlxG.worldBounds = new FlxRect(FlxG.camera.scroll.x, FlxG.camera.scroll.y, FlxG.width, FlxG.height * 2);
 			
 			//update progress
 			updateProgress();
 			
 			if (player.fallen) {
 				warning.exists = true;
-				if(!player.isDead()) {
+				if (!player.isDead()) {
+					warning.color = 0xFFFF0000;
+					warning.text = "!! [SPACE] !!";
 					blinkTimer--;
 					if (blinkTimer < 0) {
 						warning.visible = true;
@@ -160,9 +153,10 @@ package com.hunter.believe
 					}
 				} else {
 					warning.visible = true;
+					warning.color = 0xFFFF0000;
 					warning.text = "X [X] X";
 				}
-			} else if(!player.isDead()) {
+			} else if(!player.isDead() && player.hasMoved()) {
 				warning.exists = false;
 			} else if(player.hasWon()) {
 				//has won
@@ -204,9 +198,9 @@ package com.hunter.believe
 		}
 		
 		private function updateProgress():void {
-			var dist:int = Math.ceil((Math.abs(monster.getX() - player.x) / MONSTER_DIST) * 10);
+			var dist:int = Math.ceil((Math.abs(monster.getX() - player.x) / SpecHandler.monsterDist()) * 10);
 			var distLeft:int = Math.floor(((player.x - OFFSET) / level.size()) * 100);
-			progress.text = "" + dist + " | " + distLeft + "% | " + FlxG.score;
+			progress.text = "" + dist + " | " + (distLeft < 100 ? distLeft : 100) + "% | " + FlxG.score;
 			
 			if (dist > 5)
 				progress.color = 0xFFFFFFFF;

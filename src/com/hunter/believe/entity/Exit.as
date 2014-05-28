@@ -1,11 +1,12 @@
 package com.hunter.believe.entity 
 {
 	import org.flixel.FlxG;
+	import org.flixel.FlxSprite;
 	/**
 	 * ...
 	 * @author Hunter Lightman
 	 */
-	public class Exit extends Obstacle
+	public class Exit extends FlxSprite implements Collidable
 	{
 		[Embed(source = "../img/door.png")] private var exitPNG:Class;
 		
@@ -21,7 +22,7 @@ package com.hunter.believe.entity
 			
 		}
 		
-		override public function collide(player:Player):void {
+		public function collide(player:Player):void {
 			if(!player.isDead()) {
 				FlxG.level = FlxG.level + 1;
 				FlxG.camera.flash();

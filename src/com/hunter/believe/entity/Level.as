@@ -1,7 +1,12 @@
 package com.hunter.believe.entity 
 {
-	import com.hunter.believe.entity.Floors.Floor;
-	import com.hunter.believe.entity.Floors.QuickSand;
+	import com.hunter.believe.entity.floors.Floor;
+	import com.hunter.believe.entity.floors.QuickSand;
+	import com.hunter.believe.entity.obstacles.MidBlock;
+	import com.hunter.believe.entity.obstacles.Rock;
+	import com.hunter.believe.entity.obstacles.TopBlock;
+	import com.hunter.believe.util.ObsPicker;
+	import com.hunter.believe.util.SpecHandler;
 	import org.flixel.FlxBasic;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
@@ -16,19 +21,25 @@ package com.hunter.believe.entity
 	public class Level extends FlxGroup
 	{
 		
+		[Embed(source = "../img/pillar.png")] private var pillarPNG:Class;
+		
 		public var floor:FlxGroup;
 		public var ceiling:FlxGroup;
 		private var coins:FlxGroup;
 		public var obstacles:FlxGroup;
+		public var decor:FlxGroup;
 		private var x:Number;
 		private var lastY:Number;
+		private var lastPillar:int = 0;
 		private var floorTile:Floor;
 		private var levelSizes:Array = [750, 1000, 1000, 1250, 1250];
 		private var hasExit:Boolean = false;
+		private var level:int;
 		
 		public function Level() 
 		{
 			super();
+			level = FlxG.level;
 			//setup floor
 			x = 0;
 			
@@ -36,6 +47,10 @@ package com.hunter.believe.entity
 			ceiling = new FlxGroup();
 			coins = new FlxGroup();
 			obstacles = new FlxGroup();
+			decor = new FlxGroup();
+			
+			add(decor);
+			add(obstacles);
 			add(floor);
 			add(ceiling);
 			add(coins);
@@ -56,6 +71,7 @@ package com.hunter.believe.entity
 			removeOffscreen(ceiling);
 			removeOffscreen(coins);
 			removeOffscreen(obstacles);
+			removeOffscreen(decor);
 			
 			if (FlxG.camera.scroll.x + FlxG.width > x - floorTile.width) {
 				generateUntil(x + 100);
@@ -64,12 +80,19 @@ package com.hunter.believe.entity
 		
 		private function generateUntil(next:Number):void {
 			while (x < next) {
-				
-				if (FlxG.random() > 0.05) {
+				var randFloor:Number = FlxG.random()
+				if (randFloor > 0.05) {
 					addFloor(lastY); // flat floor
-				} else {
+				} else if(randFloor > 0.00) {
 					addFloor(lastY - Math.floor(FlxG.random() * 25 + 5)); //not so flat floor
 				}
+				
+				if (FlxG.random() < 0.1 && x - lastPillar > 20) {
+					//make a pillar
+					addPillar();
+					addFloor(lastY);
+				}
+				
 				if(x - 75 < size()) {
 					var rand:Number = Math.floor(FlxG.random() * 1000);
 					
@@ -79,9 +102,17 @@ package com.hunter.believe.entity
 						addCoin(lastY - (10 + Math.floor(FlxG.random() * 80)));
 					} else if (rand > 400) {
 						addObstacle();
-					} else if (rand > 300) {
+					} else if (rand > 325 && SpecHandler.canQuickSand()) {
 						//quicksand!
-						flatFloor(lastY, Math.floor(FlxG.random() * 10 + 4), true);
+						if(!SpecHandler.fallingFloor()) {
+							flatFloor(lastY, Math.floor(FlxG.random() * 10 + 4), true, SpecHandler.solidQuickSand() ? 1 : 0);
+						} else {
+							flatFloor(lastY, Math.floor(FlxG.random() * 8 + 4), false, 0);
+						}
+					} else if (rand > 275) {
+						flatFloor(lastY, 2);
+						x += floorTile.width * Math.floor(FlxG.random() * 5 + 3);
+						flatFloor(lastY, 4);
 					}
 				} else if (!hasExit) {
 					hasExit = true;
@@ -96,8 +127,8 @@ package com.hunter.believe.entity
 				coins.remove(obj);
 			}
 			
-			if (obj is Exit) {
-				(obj as Exit).collide(player as Player);
+			if (obj is Collidable) {
+				(obj as Collidable).collide(player as Player);
 			}
 		}
 		
@@ -114,20 +145,34 @@ package com.hunter.believe.entity
 			}
 		}
 		
-		public function addFloor(y:Number, quicksand:Boolean = false):void {
+		public function addFloor(y:Number, quicksand:Boolean = false, solid:int = -1):void {
 			lastY = y;
 			if (quicksand) {
-				floor.add(new QuickSand(x, lastY));
+				floor.add(new QuickSand(x, lastY, false, solid != -1 ? solid == 1 : false));
 			} else {
-				floor.add(new Floor(x, lastY));
+				floor.add(new Floor(x, lastY, false, solid != -1 ? solid == 1 : true));
 			}
 			ceiling.add(new Floor(x, lastY - FlxG.height + floorTile.height, true));
 			x += floorTile.width;
 		}
 		
-		public function flatFloor(y:Number, dist:int, quicksand:Boolean = false) {
+		public function flatFloor(y:Number, dist:int, quicksand:Boolean = false, solid:int = -1):void {
 			for (var i:int = 0; i < dist; i++) {
-				addFloor(y, quicksand);
+				addFloor(y, quicksand, solid);
+			}
+		}
+		
+		public function addPillar():void {
+			var init:Number = lastY;
+			var y:Number = init;
+			lastPillar = x;
+			while (y > init - FlxG.height + floorTile.height) {
+				//add pillar blocks
+				var tile:FlxSprite = new FlxSprite(x, y);
+				tile.loadGraphic(pillarPNG);
+				y -= tile.height;
+				tile.alpha = 0.2;
+				decor.add(tile);
 			}
 		}
 		
@@ -136,7 +181,9 @@ package com.hunter.believe.entity
 		}
 		
 		public function addObstacle():void {
-			
+			var pair:Array = ObsPicker.getObstable(x, lastY);
+			obstacles.add(pair[0]);
+			flatFloor(lastY, pair[1]);
 		}
 		
 		public function addExit():void {
@@ -145,8 +192,8 @@ package com.hunter.believe.entity
 		}
 		
 		public function size():Number {
-			if (FlxG.level < levelSizes.length) {
-				return levelSizes[FlxG.level];
+			if (level < levelSizes.length) {
+				return levelSizes[level];
 			}
 			
 			return 1500;

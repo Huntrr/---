@@ -1,5 +1,6 @@
 package com.hunter.believe.entity 
 {
+	import com.hunter.believe.util.SpecHandler;
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxParticle;
 	import org.flixel.FlxSprite;
@@ -23,8 +24,8 @@ package com.hunter.believe.entity
 			add(emitter);
 			emit();
 			
-			monster.maxVelocity.x = 48;
-			monster.maxVelocity.y = 48;
+			monster.maxVelocity.x = SpecHandler.monsterVelocity();
+			monster.maxVelocity.y = SpecHandler.monsterVelocity();
 			monster.drag.x = monster.maxVelocity.x * 4;
 			monster.drag.y = monster.maxVelocity.y * 4;
 		}

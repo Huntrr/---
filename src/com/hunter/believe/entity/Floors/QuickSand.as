@@ -1,5 +1,6 @@
-package com.hunter.believe.entity.Floors 
+package com.hunter.believe.entity.floors 
 {
+	import com.hunter.believe.entity.Player;
 	import org.flixel.FlxObject;
 	/**
 	 * ...
@@ -7,21 +8,16 @@ package com.hunter.believe.entity.Floors
 	 */
 	public class QuickSand extends Floor
 	{
-		private var staticX:Number;
+		
 		[Embed(source="../../img/quicksand.png")] private var floorPNG:Class;
-		public function QuickSand(X:Number, Y:Number, ceil:Boolean = false) 
+		public function QuickSand(X:Number, Y:Number, ceil:Boolean = false, sol:Boolean = false) 
 		{
-			super(X, Y, ceil);
-			staticX = X;
+			super(X, Y, ceil, sol);
 			loadGraphic(floorPNG, false, false);
-			this.immovable = false;
-			maxVelocity.x = 0;
-			
 		}
 		
-		override public function update():void {
-			super.update();
-			x = staticX;
+		override public function collide(player:Player):void {
+			//do nothing
 		}
 		
 	}
