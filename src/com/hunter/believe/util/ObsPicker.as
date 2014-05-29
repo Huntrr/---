@@ -29,7 +29,7 @@ package com.hunter.believe.util
 				
 				case 3:
 					obj = new TopBlock(x, y);
-					size = 1;
+					size = 2;
 					break;
 				
 				default:

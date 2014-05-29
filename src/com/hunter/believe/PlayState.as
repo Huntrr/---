@@ -18,7 +18,7 @@ package com.hunter.believe
 				 * 6 broken jump
 			 * Obstacles:
 				 * different floors (quick sand (sometimes solid?? sometimes reg floor unsolid?) and hole)
-				 * wall
+				 * more obstacles
 			 * Decorative:
 				 * Background
 				 * Weather (progressively worse)
@@ -68,6 +68,8 @@ package com.hunter.believe
 			monster = new SmokeMonster();
 			monster.setX(player.x - SpecHandler.monsterDist());
 			add(monster);
+			
+			add(SpecHandler.getWeather());
 			
 			playerEmitter = new FlxEmitter(100, 100);
 			emit();

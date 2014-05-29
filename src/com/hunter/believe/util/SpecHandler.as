@@ -1,5 +1,6 @@
 package com.hunter.believe.util 
 {
+	import com.hunter.believe.entity.weather.Weather;
 	import org.flixel.FlxSprite;
 	/**
 	 * ...
@@ -45,8 +46,9 @@ package com.hunter.believe.util
 			return false;
 		}
 		
-		public static function getWeather():FlxSprite {
-			return new FlxSprite(0, 0);
+		public static function getWeather():Weather {
+			var weather:Weather = new Weather();
+			return weather;
 		}
 		
 		public static function monsterVelocity():Number {

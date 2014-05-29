@@ -90,7 +90,7 @@ package com.hunter.believe.entity
 				if (FlxG.random() < 0.1 && x - lastPillar > 20) {
 					//make a pillar
 					addPillar();
-					addFloor(lastY);
+					flatFloor(lastY, 3);
 				}
 				
 				if(x - 75 < size()) {
