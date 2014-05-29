@@ -3,6 +3,7 @@ package com.hunter.believe
 	import com.hunter.believe.entity.Level;
 	import com.hunter.believe.entity.Player;
 	import com.hunter.believe.entity.SmokeMonster;
+	import com.hunter.believe.util.PlaySound;
 	import com.hunter.believe.util.SpecHandler;
 	import org.flixel.*;
 
@@ -17,19 +18,14 @@ package com.hunter.believe
 				 * 5 more random broken jump
 				 * 6 broken jump
 			 * Obstacles:
-				 * different floors (quick sand (sometimes solid?? sometimes reg floor unsolid?) and hole)
-				 * more obstacles
+				* different floors:
+					 * sometimes solid quicksand, sometimes unsolid ground
+				 * 4 more obstacles:
+					 * 2 more ground ones 
+					 * 1 more ceiling
+					 * 1 moving obstacle
 			 * Decorative:
 				 * Background
-				 * Weather (progressively worse)
-				 * Sounds:
-					 * Death
-					 * Fall
-					 * Jump
-					 * Land
-					 * Win
-					 * Coin
-					 * MUSIC
 		*/
 		//CONST
 		private static const OFFSET:Number = 75;
@@ -48,6 +44,15 @@ package com.hunter.believe
 		
 		private var oldScore:int;
 		
+		/*
+		 * THE MUSIC LOOP USED IN THE ACTUAL GAME IS PURCHASED WITH A ONE-USE LICENSE
+		 * I DO NOT HAVE THE RIGHT TO DISTRIBUTE THE FILE
+		 * Thus, I can't release that sound, and this music won't load.
+		 * Please either remove this line or put any other sound in 'sound/loop.mp3'
+		 * for a proper music loop. Sorry for the inconvenience.
+		 */
+		[Embed(source = "sound/loop.mp3")] private var musicLoop:Class;
+		
 		override public function create():void
 		{
 			FlxG.levels[0] = 0;
@@ -55,7 +60,7 @@ package com.hunter.believe
 			//Init games
 			FlxG.framerate = 30;
 			FlxG.flashFramerate = 30;
-			FlxG.bgColor = 0xFF280001;		
+			FlxG.bgColor = 0xFF280001;	
 			
 			//Add objects
 			level = new Level();
@@ -94,6 +99,15 @@ package com.hunter.believe
 			warning.text = "[<] [^] [>]";
 			warning.exists = true;
 			
+			//music loop
+			/*
+			 * THE MUSIC LOOP USED IN THE ACTUAL GAME IS PURCHASED WITH A ONE-USE LICENSE
+			 * I DO NOT HAVE THE RIGHT TO DISTRIBUTE THE FILE
+			 * Thus, I can't release that sound, and this music won't load.
+			 * Please either remove this line or put any other sound in 'sound/loop.mp3'
+			 * for a proper music loop. Sorry for the inconvenience.
+			 */
+			FlxG.play(musicLoop, 0.5, true, true);
 		}
 		
 		override public function update():void {
@@ -139,7 +153,14 @@ package com.hunter.believe
 			//update progress
 			updateProgress();
 			
-			if (player.fallen) {
+			if(player.hasWon()) {
+				//has won
+				monster.kill();
+				warning.visible = true;
+				warning.exists = true;
+				warning.color = 0xFF00FF00;
+				warning.text = "!! [X] !!";
+			} else if (player.fallen) {
 				warning.exists = true;
 				if (!player.isDead()) {
 					warning.color = 0xFFFF0000;
@@ -160,12 +181,6 @@ package com.hunter.believe
 				}
 			} else if(!player.isDead() && player.hasMoved()) {
 				warning.exists = false;
-			} else if(player.hasWon()) {
-				//has won
-				monster.kill();
-				warning.exists = true;
-				warning.color = 0xFF00FF00;
-				warning.text = "!! [X] !!";
 			}
 			
 			//Exit or restart stuffs
@@ -177,6 +192,8 @@ package com.hunter.believe
 				if (player.isDead()) {
 					if (!player.hasWon()) {
 						FlxG.score = oldScore;
+					} else {
+						PlaySound.finish();
 					}
 					FlxG.fade(0xFF000000, 1, FlxG.resetState);
 				}

@@ -61,6 +61,8 @@ package com.hunter.believe.entity
 			while (x < FlxG.width) {
 				addFloor(lastY);
 			}
+			
+			
 		}
 		
 		override public function update():void {

@@ -1,5 +1,6 @@
 package com.hunter.believe.entity 
 {
+	import com.hunter.believe.util.PlaySound;
 	import org.flixel.FlxG;
 	import org.flixel.FlxSprite;
 	/**
@@ -26,6 +27,7 @@ package com.hunter.believe.entity
 			if(!player.isDead()) {
 				FlxG.level = FlxG.level + 1;
 				FlxG.camera.flash();
+				PlaySound.win();
 				player.die(false);
 			}
 		}

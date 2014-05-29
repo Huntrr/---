@@ -1,5 +1,6 @@
 package com.hunter.believe.entity 
 {
+	import com.hunter.believe.util.PlaySound;
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
 	import org.flixel.FlxParticle;
@@ -44,6 +45,7 @@ package com.hunter.believe.entity
 		
 		public function collide(player:Player):void {
 			FlxG.camera.flash(0x9944FF00, 0.25, null, true);
+			PlaySound.coin();
 			FlxG.score = FlxG.score + 1;
 			kill();
 		}

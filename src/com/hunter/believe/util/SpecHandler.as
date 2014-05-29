@@ -1,6 +1,12 @@
 package com.hunter.believe.util 
 {
+	import com.hunter.believe.entity.weather.Drizzle;
+	import com.hunter.believe.entity.weather.Pour;
+	import com.hunter.believe.entity.weather.Rain;
+	import com.hunter.believe.entity.weather.Snow;
+	import com.hunter.believe.entity.weather.Storm;
 	import com.hunter.believe.entity.weather.Weather;
+	import org.flixel.FlxG;
 	import org.flixel.FlxSprite;
 	/**
 	 * ...
@@ -48,6 +54,21 @@ package com.hunter.believe.util
 		
 		public static function getWeather():Weather {
 			var weather:Weather = new Weather();
+			
+			if (FlxG.level > 0) {
+				//new weather effect
+				if (FlxG.level < 2) {
+					weather = new Snow();
+				} else if (FlxG.level < 4) {
+					weather = new Drizzle();
+				} else if (FlxG.level < 6) {
+					weather = new Rain();
+				} else if (FlxG.level < 8) {
+					weather = new Pour();
+				} else {
+					weather = new Storm();
+				}
+			}
 			return weather;
 		}
 		

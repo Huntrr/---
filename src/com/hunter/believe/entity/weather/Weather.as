@@ -17,6 +17,9 @@ package com.hunter.believe.entity.weather
 		private var flashColor:uint = 0x00000000;
 		private var flashDuration:Number = 0;
 		
+		private var effectTime:Number = 0;
+		private var effectDelta:Number = 0;
+		
 		public function Weather() 
 		{
 			super();
@@ -38,9 +41,16 @@ package com.hunter.believe.entity.weather
 			emitters.push(emit);
 		}
 		
-		public function setEffectTimer(time:Number):void {
+		public function setEffectTimer(time:Number, delta:Number):void {
+			effectTime = time;
+			effectDelta = delta;
+			
+			startTimer();
+		}
+		
+		private function startTimer():void {
 			timer.stop();
-			timer.start(time, 1, fireEffects);
+			timer.start(effectTime + (FlxG.random() * 2 * effectDelta - effectDelta), 1, fireEffects);
 		}
 		
 		public function setShake(intensity:Number, duration:Number):void {
@@ -53,20 +63,18 @@ package com.hunter.believe.entity.weather
 			flashDuration = duration;
 		}
 		
-		public function setEffects(time:Number, flashCol:uint = 0x00000000, flashDur:Number = 0, shakeInt:Number = 0, shakeDur:Number = 0):void {
+		public function setEffects(time:Number, delta:Number, flashCol:uint = 0x00000000, flashDur:Number = 0, shakeInt:Number = 0, shakeDur:Number = 0):void {
 			setShake(shakeInt, shakeDur);
 			setFlash(flashCol, flashDur);
-			setEffectTimer(time);			
+			setEffectTimer(time, delta);			
 		}
 		
-		private function fireEffects(t:FlxTimer):void {
-			timer.stop();
-			
+		private function fireEffects(t:FlxTimer):void {			
 			//effects
 			FlxG.shake(shakeIntensity, shakeDuration);
 			FlxG.flash(flashColor, flashDuration);
 			
-			timer.start(timer.time, 1, fireEffects);
+			startTimer();
 		}
 		
 		

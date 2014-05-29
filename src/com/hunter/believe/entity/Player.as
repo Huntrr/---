@@ -1,6 +1,7 @@
 package com.hunter.believe.entity 
 {
 	import com.hunter.believe.entity.floors.Floor;
+	import com.hunter.believe.util.PlaySound;
 	import com.hunter.believe.util.SpecHandler;
 	import flash.events.TimerEvent;
 	import org.flixel.FlxBasic;
@@ -72,6 +73,19 @@ package com.hunter.believe.entity
 		override public function update():void {
 			super.update();
 			
+			//Status
+			if (isTouching(FlxObject.FLOOR)) {
+				if (jumping) {
+					PlaySound.land();
+				}
+				jumping = false;
+				doubleJumped = false;
+			} else {
+				if (finished || !_curAnim) {
+					play("jumping");
+				}
+			}
+			
 			//Controls
 			acceleration.x = 0;
 			if(!fallen && !standing && !dead) {
@@ -109,6 +123,7 @@ package com.hunter.believe.entity
 						velocity.y = -maxVelocity.y / 2;
 						play("jump", true);
 						jumping = true;
+						PlaySound.jump();
 						if (SpecHandler.jumpFail()) {
 							//TRIP
 							fall();
@@ -117,6 +132,7 @@ package com.hunter.believe.entity
 						play("jump", true);
 						doubleJumped = true;
 						velocity.y = -maxVelocity.y / 2;
+						PlaySound.jump();
 						if (SpecHandler.doubleJumpFail()) {
 							//TRIP
 							fall();
@@ -139,6 +155,7 @@ package com.hunter.believe.entity
 			
 			if (FlxG.keys.justPressed("SPACE")) {
 				FlxG.shake(0.01, 0.25);
+				PlaySound.space();
 				FlxG.camera.flash(0x990000AA, 0.25);
 				
 				if (SpecHandler.getUp()) {
@@ -149,15 +166,7 @@ package com.hunter.believe.entity
 				}
 			}
 			
-			//Status
-			if (isTouching(FlxObject.FLOOR)) {
-				jumping = false;
-				doubleJumped = false;
-			} else {
-				if (finished || !_curAnim) {
-					play("jumping");
-				}
-			}
+			
 			
 			//Camera
 			if (lastBlock) {
@@ -172,7 +181,8 @@ package com.hunter.believe.entity
 		}
 		
 		public function die(anim:Boolean = true ):void {
-			if(!dead && anim) {
+			if (!dead && anim) {
+				PlaySound.death();
 				fall(false);
 				FlxG.flash(0x88FF0000, 2);
 			}
@@ -195,13 +205,17 @@ package com.hunter.believe.entity
 		}
 		
 		public function fall(getUp:Boolean = true):void {
+			if (canGetUp) {
+				if(animation != "fall") {
+					PlaySound.trip();
+				}
+				velocity.y = -maxVelocity.y / 3;
+			}
 			play("fall", true);
 			FlxG.shake(0.025, 0.5);
 			FlxG.flash(0x88FF0000, 0.5);
 			canGetUp = getUp;
-			if (canGetUp) {
-				velocity.y = -maxVelocity.y / 3;
-			}
+			
 		}
 		public function stand(e:FlxTimer):void {
 			e.stop();
