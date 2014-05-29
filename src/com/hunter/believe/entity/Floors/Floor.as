@@ -29,7 +29,9 @@ package com.hunter.believe.entity.floors
 		}
 		
 		public function collide(player:Player):void {
-			player.lastBlock = this;
+			if(this.immovable) {
+				player.lastBlock = this;
+			}
 		}
 		
 	}
