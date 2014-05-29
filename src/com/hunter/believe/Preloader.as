@@ -1,1 +1,1 @@
-package com.hunter.believe{	import org.flixel.system.FlxPreloader;	public class Preloader extends FlxPreloader	{		public function Preloader()		{			className = "Believe";			super();		}	}}
+package com.hunter.believe{	import org.flixel.system.FlxPreloader;	public class Preloader extends FlxPreloader	{		public function Preloader()		{			className = "Believe";			super();								}	}}
