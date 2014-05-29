@@ -28,28 +28,39 @@ package com.hunter.believe.util
 			   controlsReversed() - (ehhh)
 			 */
 		
+		
+			 
 		public static function doubleJumpFail():Boolean {
-			return false;
+			var likelihood:Number = 0;
+			return FlxG.random() < likelihood;
 		}
 		
 		public static function jumpFail():Boolean {
-			return false;
+			var likelihood:Number = 0;
+			return FlxG.random() < likelihood;
 		}
 		
 		public static function getUp():Boolean {
-			return true;
+			var likelihood:Number = 1;
+			return FlxG.random() < likelihood;
 		}
 		
 		public static function canQuickSand():Boolean {
-			return true;
+			if(FlxG.level > 0) {
+				return true;
+			}
+			
+			return false;
 		}
 		
 		public static function solidQuickSand():Boolean {
-			return false;
+			var likelihood:Number = 0;
+			return FlxG.random() < likelihood;
 		}
 		
 		public static function fallingFloor():Boolean {
-			return false;
+			var likelihood:Number = 0;
+			return FlxG.random() < likelihood;
 		}
 		
 		public static function getWeather():Weather {
@@ -73,15 +84,30 @@ package com.hunter.believe.util
 		}
 		
 		public static function monsterVelocity():Number {
-			return 48;
+			var x:Number = FlxG.level;
+			var y:Number = x + 48
+			return y;
 		}
 		
 		public static function monsterDist():Number {
-			return 900;
+			var x:Number = FlxG.level;
+			var y:Number = 900 - x;
+			return y;
 		}
 		
 		public static function controlsReversed():Boolean {
 			return false;
+		}
+		
+		private static var levelSizes:Array = [750, 1000, 1000, 1250, 1250];
+		public static function levelLength():Number {
+			if (FlxG.level < levelSizes.length) {
+				return levelSizes[FlxG.level];
+			}
+			
+			var x:Number = FlxG.level;
+			var y:Number = x + 1500;
+			return y;
 		}
 		
 	}

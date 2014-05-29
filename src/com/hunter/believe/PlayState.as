@@ -10,20 +10,6 @@ package com.hunter.believe
 	public class PlayState extends FlxState
 	{
 		/* TODO LIST:
-			 * Level up-difficulties:
-				 * 1 normal
-				 * 2 normal
-				 * 3 random no double jump
-				 * 4 random broken jump ((allow space -> get up))
-				 * 5 more random broken jump
-				 * 6 broken jump
-			 * Obstacles:
-				* different floors:
-					 * sometimes solid quicksand, sometimes unsolid ground
-				 * 4 more obstacles:
-					 * 2 more ground ones 
-					 * 1 more ceiling
-					 * 1 moving obstacle
 			 * Decorative:
 				 * Background
 		*/

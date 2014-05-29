@@ -32,14 +32,17 @@ package com.hunter.believe.entity
 		private var lastY:Number;
 		private var lastPillar:int = 0;
 		private var floorTile:Floor;
-		private var levelSizes:Array = [750, 1000, 1000, 1250, 1250];
+		
 		private var hasExit:Boolean = false;
 		private var level:int;
+		
+		private var levelSize:Number;
 		
 		public function Level() 
 		{
 			super();
 			level = FlxG.level;
+			levelSize = SpecHandler.levelLength();
 			//setup floor
 			x = 0;
 			
@@ -194,11 +197,7 @@ package com.hunter.believe.entity
 		}
 		
 		public function size():Number {
-			if (level < levelSizes.length) {
-				return levelSizes[level];
-			}
-			
-			return 1500;
+			return levelSize
 		}
 		
 	}
