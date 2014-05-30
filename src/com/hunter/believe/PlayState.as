@@ -95,6 +95,8 @@ package com.hunter.believe
 			 * for a proper music loop. Sorry for the inconvenience.
 			 */
 			FlxG.play(musicLoop, 0.5, true, true);
+			
+			SpecHandler.flipScreen();
 		}
 		
 		override public function update():void {
