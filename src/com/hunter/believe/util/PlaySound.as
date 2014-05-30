@@ -16,6 +16,7 @@ package com.hunter.believe.util
 		[Embed(source = "../sound/win.mp3")] private static var winSound:Class;
 		[Embed(source = "../sound/space.mp3")] private static var spaceSound:Class;
 		[Embed(source = "../sound/trip.mp3")] private static var tripSound:Class;
+		[Embed(source = "../sound/slip.mp3")] private static var slipSound:Class;
 		
 		private static var volume:Number = 0.75
 		
@@ -42,6 +43,9 @@ package com.hunter.believe.util
 		}
 		public static function trip():void {
 			FlxG.play(tripSound, volume); 
+		}
+		public static function slip():void {
+			FlxG.play(slipSound, volume); 
 		}
 		
 	}

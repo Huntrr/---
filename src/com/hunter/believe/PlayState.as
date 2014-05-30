@@ -46,7 +46,7 @@ package com.hunter.believe
 			//Init games
 			FlxG.framerate = 30;
 			FlxG.flashFramerate = 30;
-			FlxG.bgColor = 0xFF280001;	
+			FlxG.bgColor = 0xFF280B0E;	
 			
 			//Add objects
 			level = new Level();
@@ -84,6 +84,7 @@ package com.hunter.believe
 			add(warning);
 			warning.text = "[<] [^] [>]";
 			warning.exists = true;
+			
 			
 			//music loop
 			/*

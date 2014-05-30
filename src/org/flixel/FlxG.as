@@ -330,6 +330,7 @@ package org.flixel
 		 */
 		static public function random():Number
 		{
+			return Math.random();
 			return globalSeed = FlxU.srand(globalSeed);
 		}
 		

@@ -2,7 +2,9 @@ package com.hunter.believe.entity.obstacles
 {
 	import com.hunter.believe.entity.Obstacle;
 	import com.hunter.believe.entity.Player;
+	import org.flixel.FlxBasic;
 	import org.flixel.FlxG;
+	import org.flixel.FlxObject;
 	/**
 	 * ...
 	 * @author Hunter Lightman
@@ -52,6 +54,9 @@ package com.hunter.believe.entity.obstacles
 		override public function collide(player:Player):void {
 			super.collide(player);
 			FlxG.shake(0.025, 0.3);
+			if (player.facing == FlxObject.LEFT) {
+				player.velocity.x = -player.velocity.x;
+			}
 			player.x += width - (player.x - x);
 		}
 	}

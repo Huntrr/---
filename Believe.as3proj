@@ -90,6 +90,7 @@
     <asset path="src\com\hunter\believe\sound\space.mp3" />
     <asset path="src\com\hunter\believe\sound\trip.mp3" />
     <asset path="src\com\hunter\believe\sound\win.mp3" />
+    <asset path="src\com\hunter\believe\sound\slip.mp3" />
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>

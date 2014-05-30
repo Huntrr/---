@@ -126,7 +126,7 @@ package com.hunter.believe.entity
 						PlaySound.jump();
 						if (SpecHandler.jumpFail()) {
 							//TRIP
-							fall(true, false);
+							fall(true, false, true);
 						}
 					} else if (!doubleJumped) {
 						play("jump", true);
@@ -135,7 +135,7 @@ package com.hunter.believe.entity
 						PlaySound.jump();
 						if (SpecHandler.doubleJumpFail()) {
 							//TRIP
-							fall(true, false);
+							fall(true, false, true);
 						}
 					}
 				}
@@ -204,10 +204,12 @@ package com.hunter.believe.entity
 			return moved;
 		}
 		
-		public function fall(getUp:Boolean = true, noise:Boolean = true):void {
+		public function fall(getUp:Boolean = true, noise:Boolean = true, altNoise:Boolean = false):void {
 			if (canGetUp) {
 				if(animation != "fall" && noise) {
 					PlaySound.trip();
+				} else if (animation != "fall" && altNoise) {
+					PlaySound.slip();
 				}
 				velocity.y = -maxVelocity.y / 3;
 			}

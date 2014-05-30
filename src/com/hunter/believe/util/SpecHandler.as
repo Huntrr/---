@@ -33,16 +33,15 @@ package com.hunter.believe.util
 		public static function doubleJumpFail():Boolean {
 			var likelihood:Number = 0;
 			if (FlxG.level > 4) {
-				likelihood = Math.min(FlxG.level - 3, 24) / 24;
+				likelihood = Math.min(FlxG.level - 3, 20) / 27;
 			}
-			
 			return FlxG.random() < likelihood;
 		}
 		
 		public static function jumpFail():Boolean {
 			var likelihood:Number = 0;
 			if (FlxG.level > 7) {
-				likelihood = Math.min(FlxG.level - 6, 25) / 25;
+				likelihood = Math.min(FlxG.level - 6, 20) / 30;
 			}
 			
 			return FlxG.random() < likelihood;
@@ -149,7 +148,7 @@ package com.hunter.believe.util
 		
 		public static function monsterVelocity():Number {
 			var x:Number = FlxG.level;
-			var y:Number = x * 0.2 + 45;
+			var y:Number = x * 0.5 + 38;
 			return y;
 		}
 		
@@ -189,6 +188,22 @@ package com.hunter.believe.util
 			var x:Number = FlxG.level;
 			var y:Number = (x - 12) * 100 + 2500;
 			return y;
+		}
+		
+		private static var origYScale:Number = 0;
+		public static function flipScreen():void {
+			if (origYScale == 0) {
+				origYScale = FlxG.camera.getScale().y
+			}
+			var flipped:Boolean = false;
+			var likelihood:Number = 0;
+			
+			if (FlxG.level > 6) {
+				likelihood = 0.2;
+				flipped =  FlxG.random() < likelihood;
+			}
+			
+			FlxG.camera.setScale(FlxG.camera.getScale().x, (flipped ? -1 : 1) * origYScale);
 		}
 		
 	}
